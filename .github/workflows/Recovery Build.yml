@@ -103,19 +103,23 @@ jobs:
     - name: Clean workspace folder
       run: rm -rf workspace
 
-    - name: Configure git
-      run: git config --global http.postBuffer 524288000
+    - name: Configure Git
+      run: |
+        git config --global user.name "KrzysTheTech"
+        git config --global user.email "krzysztofdemirkuzniak@gmail.com"
+        git config --global http.postBuffer 524288000
 
     - name: Initialize repo
       run: |
         mkdir workspace && cd workspace
-        git config --global user.name "KrzysTheTech"
-        git config --global user.email "example@example.com"
-        repo init --depth=1 -u ${{ github.event.inputs.MANIFEST_URL }} -b ${{ github.event.inputs.MANIFEST_BRANCH }}
+        repo init -u ${{ github.event.inputs.MANIFEST_URL }} \
+          -b ${{ github.event.inputs.MANIFEST_BRANCH }} \
+          --depth=1 --no-clone-bundle --partial-clone --clone-filter=blob:limit=1m
       id: init
 
     - name: Repo sync
-      run: repo sync -j$(nproc --all) -c --no-clone-bundle --force-sync
+      run: |
+        repo sync -c -j1 --fail-fast --force-sync
       working-directory: workspace
 
     - name: Clone device tree
