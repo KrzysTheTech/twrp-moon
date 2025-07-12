@@ -100,6 +100,12 @@ jobs:
         chmod a+x ~/bin/repo
         sudo ln -sf ~/bin/repo /usr/bin/repo
 
+    - name: Clean workspace folder
+      run: rm -rf workspace
+
+    - name: Configure git
+      run: git config --global http.postBuffer 524288000
+
     - name: Initialize repo
       run: |
         mkdir workspace && cd workspace
@@ -108,9 +114,8 @@ jobs:
         repo init --depth=1 -u ${{ github.event.inputs.MANIFEST_URL }} -b ${{ github.event.inputs.MANIFEST_BRANCH }}
       id: init
 
-    - name: Sync repo
-      run: |
-        repo sync -j$(nproc --all) --force-sync
+    - name: Repo sync
+      run: repo sync -j$(nproc --all) -c --no-clone-bundle --force-sync
       working-directory: workspace
 
     - name: Clone device tree
