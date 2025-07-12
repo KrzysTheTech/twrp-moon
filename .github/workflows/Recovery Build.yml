@@ -10,7 +10,7 @@ on:
       MANIFEST_BRANCH:
         description: 'TWRP manifest branch'
         required: true
-        default: 'twrp-14.0'
+        default: 'twrp-14.1'
       DEVICE_TREE_URL:
         description: 'Device tree URL'
         required: true
