@@ -18,7 +18,7 @@ on:
       DEVICE_TREE_BRANCH:
         description: 'Device tree branch'
         required: true
-        default: 'twrp-14.0'
+        default: 'twrp-14.1'
       DEVICE_PATH:
         description: 'Local device path'
         required: true
@@ -50,18 +50,17 @@ jobs:
       contents: write
 
     steps:
-    - name: Display Input Parameters
+    - name: Free up disk space
       run: |
-        echo "::group::Inputs"
-        echo "Manifest URL: ${{ github.event.inputs.MANIFEST_URL }}"
-        echo "Manifest Branch: ${{ github.event.inputs.MANIFEST_BRANCH }}"
-        echo "Device Tree URL: ${{ github.event.inputs.DEVICE_TREE_URL }}"
-        echo "Device Tree Branch: ${{ github.event.inputs.DEVICE_TREE_BRANCH }}"
-        echo "Device Path: ${{ github.event.inputs.DEVICE_PATH }}"
-        echo "Device Name: ${{ github.event.inputs.DEVICE_NAME }}"
-        echo "Makefile Name: ${{ github.event.inputs.MAKEFILE_NAME }}"
-        echo "Build Target: ${{ github.event.inputs.BUILD_TARGET }}.img"
-        echo "::endgroup::"
+        echo "Before cleanup:"
+        df -h
+        sudo apt-get purge -y '^ghc-' '^dotnet-' '^llvm-' 'mongodb-*' '^mysql-' \
+          '^php.*' '^postgresql-' '^snapd$'
+        sudo apt-get autoremove -y
+        sudo apt-get clean
+        sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache
+        echo "After cleanup:"
+        df -h
 
     - name: Checkout Repo
       uses: actions/checkout@v4
